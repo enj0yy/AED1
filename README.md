@@ -2,4 +2,4 @@
 
 Graziele Fagundes Martins - M1
 
-Repositório contendo todas as listas de exercicios e trabalhos feitos na cadeira de Algoritmos e Estruturas de Dados 1.
+Repositório contendo exercicios e trabalhos feitos na cadeira de Algoritmos e Estruturas de Dados 1.
