@@ -35,12 +35,12 @@ char * AdicionarNome(char * s)
 
     if(s == NULL)
     {
-        s = (char*) malloc(sizeof(char) * (strlen(nome)+1));
+        s = (char*) malloc( (strlen(nome)+1) * sizeof(char));
         *s = '\0';
     }
     else
     {
-        s = (char*) realloc(s, strlen(s) + ( (strlen(nome)+2) * sizeof(char) ));
+        s = (char*) realloc(s, ( strlen(s) + strlen(nome) + 2 ) * sizeof(char) );
         strcat(s, "|");
     }
 
@@ -61,7 +61,7 @@ char * RemoverNome(char * s)
     int size_until_name_appear = 0;
     int new_size=0;
 
-    char* temp = (char*)malloc(strlen(s)+1 * sizeof(char));
+    char* temp = (char*)malloc( (strlen(s) + 1) * sizeof(char));
     strcpy(temp, s);
     
     printf("Digite o nome: ");
@@ -77,7 +77,7 @@ char * RemoverNome(char * s)
                 s[i-strlen(token)-1] = s[i];
             }
             new_size = (strlen(s) - strlen(token));
-            s = (char*) realloc(s, new_size * sizeof(char) );
+            s = (char*) realloc(s, new_size * sizeof(char));
             s[new_size-1] = '\0';
             break;
         }
@@ -97,7 +97,7 @@ Lista os nomes presentes na string :).
 */
 void Listar(char * s)
 {
-    char* temp = (char*)malloc(strlen(s)+1 * sizeof(char));
+    char* temp = (char*)malloc( (strlen(s) + 1) * sizeof(char));
     strcpy(temp, s);
     char * token;
 
