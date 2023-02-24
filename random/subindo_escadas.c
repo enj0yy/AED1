@@ -8,20 +8,29 @@ Lógica:
 Permutacao com repeticao!!!
 
 1 ------------	qtd de loops/permutacoes: 0 = ceil(1/2)-1
+1
 
 2 ------------	qtd de loops/permutacoes: 0 = (2/2)-1
+1 1 
+2
 
 3 ------------ 	qtd de loops/permutacoes: 1 = ceil(3/2)-1
+1 1 1
 (3-1)!/1!(3-2)!
 
 4 ------------	qtd de loops/permutacoes: 1 = (4/2)-1
+1 1 1
+2 2
 (4-1)!/1!(4-2)!
 
 5 -------------	qtd de loops/permutacoes: 2 = ceil(5/2)-1
+1 1 1 1 1
 (5-1)!/1!(5-2)!
 (5-2)!/2!(5-4)!
 
 6 ------------	qtd de loops/permutacoes: 2 = (6/2)-1
+1 1 1 1 1 1
+2 2 2
 (6-1)/1!(6-2)!
 (6-2)/2!(6-4)!
 */
