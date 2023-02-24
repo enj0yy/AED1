@@ -3,6 +3,23 @@ Você está subindo uma escada. São necessários n passos para chegar ao topo.
 Cada vez você pode subir 1 ou 2 degraus. De quantas maneiras distintas você pode subir até o topo?
 */
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <math.h>
+
+long double Fatorial(int n)
+{
+    if (n == 0 || n == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return n * Fatorial(n-1);
+    }
+}
+
 /*
 Lógica:
 Permutacao com repeticao!!!
@@ -34,25 +51,7 @@ Permutacao com repeticao!!!
 (6-1)/1!(6-2)!
 (6-2)/2!(6-4)!
 */
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <math.h>
-
-int Fatorial(int n)
-{
-    if (n == 0 || n == 1)
-    {
-        return 1;
-    }
-    else
-    {
-        return n * Fatorial(n-1);
-    }
-}
-
-int QuantasManeiras(int n)
+int QuantasManeirasComPermutacao(int n)
 {
     int maneiras = 1;
     float qtd_permutacoes;
@@ -72,12 +71,67 @@ int QuantasManeiras(int n)
     return maneiras;
 }
 
+/*
+Lógica:
+0 -----------   base
+1
+
+1 ------------	base
+1
+
+2 ------------	passo
+1+1 = 2
+
+3 ------------ 	passo
+2+1 = 3
+
+4 ------------	passo
+3+2 = 5
+*/
+int QuantasManeirasComRecursividade(int n)
+{
+    int maneiras;
+
+    if (n == 0 || n == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        maneiras = QuantasManeirasComRecursividade(n-1) + QuantasManeirasComRecursividade(n-2);
+    }
+    
+    return maneiras;
+}
+
+int QuantasManeirasSemRecursividade(int n)
+{
+    int maneiras;
+
+    int a = 0;
+    int b = 1;
+    int soma;
+
+    for(int i=1; i<=n; i++) 
+    {
+        soma = a + b; 
+        maneiras = soma;
+        a = b;    
+        b = soma; 
+    }
+    
+    return maneiras;
+}
+
 int main()
 {
     int n;
     printf("Digite o n: ");
     scanf("%d",&n);
 
-    printf("Maneiras: %d", QuantasManeiras(n));
+    printf("Maneiras (Permutacao): %d\n", QuantasManeirasComPermutacao(n));
+    printf("Maneiras (Recursividade): %d\n", QuantasManeirasComRecursividade(n));
+    printf("Maneiras (S/ Recursividade): %d\n", QuantasManeirasSemRecursividade(n));
+
     return 0;
 }
