@@ -1,3 +1,3 @@
-Exercícios do LeetCode - Graziele Fagundes Martins - M1
+Exercícios legais do LeetCode :D
 
 Regras de código: https://fabiensanglard.net/fd_proxy/doom3/CodeStyleConventions.pdf
