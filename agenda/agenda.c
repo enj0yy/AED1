@@ -6,15 +6,15 @@
 pBuffer
 {
     int opcao;
-    char nomeBuscar[10];
+    char nomePopSearch[10];
 }
 nodo
 {
     char nome[10];
     int idade;
     int telefone;
-    char * ant;
-    char * prox;
+    void * ant;
+    void * prox;
 }
 */
 
@@ -79,13 +79,41 @@ void Push()
 
     while( *(void **)(p + SizeUntilProx()) != NULL )    //anda na lista até achar o nodo que tem prox == NULL, o ultimo
     {
-         p = *(void **)(p + SizeUntilProx());
+        p = *(void **)(p + SizeUntilProx());
     }
-    *(void **)(p + SizeUntilProx()) = novo;      //proximo - anterior ao novo  
-    *(void **)(novo + SizeUntilAnt()) = p;       //anterior - novo
-    *(void **)(novo + SizeUntilProx()) = NULL;   //proximo - novo
+    *(void **)(p + SizeUntilProx()) = novo;             //anterior ao novo - setar proximo
+    *(void **)(novo + SizeUntilAnt()) = p;              //novo - setar anterior
+    *(void **)(novo + SizeUntilProx()) = NULL;          //novo - setar proximo
+}
 
-    free(p);
+void Pop()
+{
+    void * p = *(void **)(head + SizeUntilProx());   
+    printf("Digite o nome a apagar: ");
+    scanf("%s",(char *)(pBuffer + sizeof(int)) );
+
+    void * pAnt;
+    void * pProx;
+               
+    while(p!=NULL)
+    {
+        if ( strcmp( (char *)p, (char *)(pBuffer + sizeof(int)) ) == 0 )
+        {
+            pAnt = *(void **)(p + SizeUntilAnt());
+            pProx = *(void **)(p + SizeUntilProx());
+
+            if( pAnt != NULL )
+            *(void **)(pAnt + SizeUntilProx()) = pProx;
+
+            if( pProx != NULL )
+            *(void **)(pProx + SizeUntilAnt()) = pAnt;
+
+            printf("Pessoa apagada :)\n");
+            free(p);
+            break;
+        }
+        p = *(void **)(p + SizeUntilProx());
+    }   
 }
 
 void Search()
@@ -104,13 +132,11 @@ void Search()
         }
         p = *(void **)(p + SizeUntilProx());
     }
-
-    free(p);
 }
 
 void List()
 {
-    void * p = *(void **)(head + SizeUntilProx());                //comeca no proximo da cabeca
+    void * p = *(void **)(head + SizeUntilProx());               
 
     while(p!=NULL)
     {
@@ -120,8 +146,6 @@ void List()
 
         p = *(void **)(p + SizeUntilProx());
     }
-
-    free(p);
 }
 
 void Menu()
@@ -150,7 +174,7 @@ int main()
             Push();
             break;
         case 2:
-            //Pop();
+            Pop();
             break;
         case 3:
             Search();
