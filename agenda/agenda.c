@@ -54,6 +54,13 @@ int SizeUntilProx()
 void Reset()
 {       
     head = malloc(SizeNode());
+
+    if (head == NULL)
+    {
+        printf("Nao foi possivel alocar!");
+        return;
+    }
+
     *(void **)(head + SizeUntilAnt()) = NULL;
     *(void **)(head + SizeUntilProx()) = NULL;
 }
@@ -66,6 +73,12 @@ int Empty()
 void Push()
 {
     void * novo = malloc(SizeNode());
+    if (novo == NULL)
+    {
+        printf("Nao foi possivel alocar!");
+        return;
+    }
+    
     void * p = head;  
 
     printf("Digite o nome: ");
@@ -76,14 +89,40 @@ void Push()
 
     printf("Digite o telefone: ");
     scanf( "%d", (int *)(novo + SizeUntilTelefone()) );
-
-    while( *(void **)(p + SizeUntilProx()) != NULL )    //anda na lista até achar o nodo que tem prox == NULL, o ultimo
+    
+    if (Empty())    //se a lista esta vazia insere no começo
     {
-        p = *(void **)(p + SizeUntilProx());
+        *(void **)(p + SizeUntilProx()) = novo;            
+        *(void **)(novo + SizeUntilAnt()) = p;             
+        *(void **)(novo + SizeUntilProx()) = NULL;   
     }
-    *(void **)(p + SizeUntilProx()) = novo;             //anterior ao novo - setar proximo
-    *(void **)(novo + SizeUntilAnt()) = p;              //novo - setar anterior
-    *(void **)(novo + SizeUntilProx()) = NULL;          //novo - setar proximo
+    else
+    {
+        p = *(void **)(head + SizeUntilProx());
+        while( p != NULL ) 
+        {
+            if ( strcmp( (char *)novo, (char *)p ) == -1)   //se o nome a ser inserido vem antes do nome atual
+            {
+                *(void **)(novo + SizeUntilAnt()) = *(void **)(p + SizeUntilAnt());           
+                *(void **)(novo + SizeUntilProx()) = p;
+
+                *(void **)((*(void **)(p + SizeUntilAnt())) + SizeUntilProx()) = novo;
+                *(void **)(p + SizeUntilAnt()) = novo;
+                break;
+            }
+            else if ( (strcmp((char *)novo,(char *)p) == 1) && (*(void **)(p + SizeUntilProx()) == NULL) ) //se o nome a ser inserido vem depois do nome atual e o nome atual é o ultimo
+            {
+                *(void **)(p + SizeUntilProx()) = novo;            
+                *(void **)(novo + SizeUntilAnt()) = p;             
+                *(void **)(novo + SizeUntilProx()) = NULL; 
+                break;
+            }
+            p = *(void **)(p + SizeUntilProx());
+        }
+    }         
+
+    p = NULL;
+    free(p);
 }
 
 void Pop()
@@ -113,7 +152,7 @@ void Pop()
             break;
         }
         p = *(void **)(p + SizeUntilProx());
-    }   
+    }  
 }
 
 void Search()
@@ -126,12 +165,12 @@ void Search()
     {
         if ( strcmp( (char *)p, (char *)(pBuffer + sizeof(int)) ) == 0 )
         {
-            printf("Nome: %s\n",(char *)p);
-            printf("Idade: %d\n",*(int *)(p + SizeUntilIdade()));
-            printf("Telefone: %d\n",*(int *)(p + SizeUntilTelefone()));
+            printf("Nome: %s | Idade: %d | Telefone: %d\n",(char *)p, *(int *)(p + SizeUntilIdade()),*(int *)(p + SizeUntilTelefone()));
         }
         p = *(void **)(p + SizeUntilProx());
     }
+
+    free(p); 
 }
 
 void List()
@@ -140,12 +179,26 @@ void List()
 
     while(p!=NULL)
     {
-        printf("Nome: %s\n",(char *)p);
-        printf("Idade: %d\n",*(int *)(p + SizeUntilIdade()));
-        printf("Telefone: %d\n",*(int *)(p + SizeUntilTelefone()));
-
+        printf("Nome: %s | Idade: %d | Telefone: %d\n",(char *)p, *(int *)(p + SizeUntilIdade()),*(int *)(p + SizeUntilTelefone()));
         p = *(void **)(p + SizeUntilProx());
     }
+
+    free(p); 
+}
+
+void Clear()
+{
+    void * p = *(void **)(head + SizeUntilProx()); 
+    void * nodo = *(void **)(head + SizeUntilProx());              
+
+    while(p!=NULL)
+    {
+        p = *(void **)(p + SizeUntilProx());
+        free(nodo); 
+        nodo = (void *)(p);
+    }
+
+    free(p);
 }
 
 void Menu()
@@ -163,6 +216,12 @@ void Menu()
 int main()
 {
     pBuffer = malloc( sizeof(int) + (10 * sizeof(char)) ); 
+    if (pBuffer == NULL)
+    {
+        printf("Nao foi possivel alocar!");
+        return 0;
+    }
+
     Reset();
     
     do
@@ -184,9 +243,11 @@ int main()
             break;
         } 
     }
-    while ( ReturnOption() != 5);
+    while ( ReturnOption() != 5 );
 
+    Clear();
     free(pBuffer);
+    free(head);
 
     return 0;
 }
