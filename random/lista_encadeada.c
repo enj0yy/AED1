@@ -21,7 +21,7 @@ void InserirNoFinal(int num)
 
     for(p = cabeca; p->prox != NULL; p = p->prox);
     p->prox = novo;
-};
+}
 
 void InserirOrdenado(int num)
 {
@@ -32,7 +32,7 @@ void InserirOrdenado(int num)
     novo = malloc(sizeof(Celula));
     novo->valor = num;
 
-    if (p->prox ==  NULL)           //lista vazia
+    if (p->prox ==  NULL)           
     {
         p->prox = novo;
         novo->prox = NULL;
@@ -56,7 +56,7 @@ void InserirOrdenado(int num)
             p_menos_um = p;
         }
     } 
-};
+}
 
 void Remover(int num)
 {
