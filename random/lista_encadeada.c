@@ -10,7 +10,7 @@ typedef struct cel
 
 Celula * cabeca;
 
-void InserirNoFinal(int num)
+void PushEnd(int num)
 {
     Celula * p;
 
@@ -23,7 +23,7 @@ void InserirNoFinal(int num)
     p->prox = novo;
 }
 
-void InserirOrdenado(int num)
+void PushInOrder(int num)
 {
     Celula * p = cabeca;
     Celula * p_menos_um = cabeca; 
@@ -58,7 +58,7 @@ void InserirOrdenado(int num)
     } 
 }
 
-void Remover(int num)
+void Pop(int num)
 {
     Celula * p;
     Celula * p_menos_um = cabeca;
@@ -74,7 +74,7 @@ void Remover(int num)
     }
 }
 
-void Listar()
+void List()
 {
     for(Celula * p = cabeca->prox; p != NULL; p = p->prox)
     {
@@ -87,14 +87,14 @@ int main()
     cabeca = malloc(sizeof(Celula));
     cabeca->prox = NULL;
 
-    InserirOrdenado(2);
-    InserirOrdenado(4);
-    InserirOrdenado(1);
-    InserirOrdenado(10);
+    PushInOrder(2);
+    PushInOrder(4);
+    PushInOrder(1);
+    PushInOrder(10);
 
-    Remover(10);
+    Pop(10);
 
-    Listar();
+    List();
 
     return 0;
 }

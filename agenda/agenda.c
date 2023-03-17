@@ -128,31 +128,20 @@ void Push()
 void Pop()
 {
     void * p = *(void **)(head + SizeUntilProx());   
-    printf("Digite o nome a apagar: ");
-    scanf("%s",(char *)(pBuffer + sizeof(int)) );
-
     void * pAnt;
     void * pProx;
                
-    while(p!=NULL)
-    {
-        if ( strcmp( (char *)p, (char *)(pBuffer + sizeof(int)) ) == 0 )
-        {
-            pAnt = *(void **)(p + SizeUntilAnt());
-            pProx = *(void **)(p + SizeUntilProx());
+    pAnt = *(void **)(p + SizeUntilAnt());
+    pProx = *(void **)(p + SizeUntilProx());
 
-            if( pAnt != NULL )
-            *(void **)(pAnt + SizeUntilProx()) = pProx;
+    if( pAnt != NULL )
+    *(void **)(pAnt + SizeUntilProx()) = pProx;
 
-            if( pProx != NULL )
-            *(void **)(pProx + SizeUntilAnt()) = pAnt;
-
-            printf("Pessoa apagada :)\n");
-            free(p);
-            break;
-        }
-        p = *(void **)(p + SizeUntilProx());
-    }  
+    if( pProx != NULL )
+    *(void **)(pProx + SizeUntilAnt()) = pAnt;
+            
+    free(p);
+    printf("Primeira pessoa da fila foi apagada!");
 }
 
 void Search()

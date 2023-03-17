@@ -5,7 +5,7 @@
 typedef struct _pessoa
 {
     int idade;
-    char nome[10];
+    char nome[30];
 } Pessoa;
 
 typedef struct _pilha
@@ -30,22 +30,15 @@ int Empty(Pilha * pilha)
     return pilha->topo == NULL;
 }
 
-Pessoa * NewPessoa(int idade, char * nome)
+Pessoa NewPessoa(int idade, char * nome)
 {
-    Pessoa * pessoa =  (Pessoa*)malloc(sizeof(Pessoa));
-
-    if (pessoa == NULL)
-    {
-        printf("Erro na alocaçao!");
-        exit(1);
-    }
-
-    pessoa->idade = idade;
-    strcpy(pessoa->nome, nome);
+    Pessoa pessoa;
+    pessoa.idade = idade;
+    strcpy(pessoa.nome, nome);
     return pessoa;
 }
 
-int Push(Pilha * pilha, Pessoa * pessoa)
+int Push(Pilha * pilha, Pessoa pessoa)
 {
     pilha->n_pessoas++;
     pilha->pessoas = realloc(pilha->pessoas, sizeof(Pessoa)*pilha->n_pessoas);
@@ -56,7 +49,7 @@ int Push(Pilha * pilha, Pessoa * pessoa)
         exit(1);
     }
 
-    pilha->pessoas[pilha->n_pessoas-1] = *pessoa;
+    pilha->pessoas[pilha->n_pessoas-1] = pessoa;
     pilha->topo = &pilha->pessoas[pilha->n_pessoas-1];
     pilha->base = &pilha->pessoas[0];
 
@@ -81,7 +74,6 @@ void Pop(Pilha * pilha, Pessoa * pessoa_pop)
             pilha->base = &pilha->pessoas[0]; 
         }
     }
-    free(pessoa_pop);
 }
 
 void List(Pilha * pilha)
@@ -101,14 +93,14 @@ void List(Pilha * pilha)
     while(!Empty(pilha))
     {
         Pop(pilha,&pessoa_pop);
-        Push(pilha_copia,&pessoa_pop);
+        Push(pilha_copia,pessoa_pop);
         printf("Nome: %s Idade: %d \n",pessoa_pop.nome,pessoa_pop.idade);
     }
 
     while(!Empty(pilha_copia))
     {
         Pop(pilha_copia,&pessoa_pop);
-        Push(pilha,&pessoa_pop);
+        Push(pilha,pessoa_pop);
     }
     free(pilha_copia);
 }
@@ -130,7 +122,7 @@ void DeleteByName(Pilha * pilha, char * nome)
     while(!Empty(pilha))
     {
         Pop(pilha,&pessoa_pop);
-        Push(pilha_copia,&pessoa_pop);
+        Push(pilha_copia,pessoa_pop);
         if (strcmp(pessoa_pop.nome,nome) == 0) 
             break;
     }
@@ -139,7 +131,7 @@ void DeleteByName(Pilha * pilha, char * nome)
     while(!Empty(pilha_copia))          //Copia a pilha copia para a pilha original sem o nome
     {      
         Pop(pilha_copia,&pessoa_pop);
-        Push(pilha,&pessoa_pop);
+        Push(pilha,pessoa_pop);
     }
     free(pilha_copia);
 }
