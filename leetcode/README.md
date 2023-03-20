@@ -1,1 +1,3 @@
-# Exercícios legais do LeetCode
+# LeetCode 
+
+Exercícios legais do LeetCode :)
