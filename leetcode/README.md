@@ -1,3 +1,3 @@
-Exercícios legais do LeetCode :D
+# LeetCode 
 
-Regras de código: https://fabiensanglard.net/fd_proxy/doom3/CodeStyleConventions.pdf
+Exercícios legais do LeetCode :)
