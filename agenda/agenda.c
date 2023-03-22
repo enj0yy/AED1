@@ -3,14 +3,17 @@
 #include <string.h>
 
 /* 
+Estrutura:
+
 pBuffer
 {
     int opcao;
-    char nomePopSearch[10];
+    char nomeDeleteSearch[10];
     char nome[10];
     int idade;
     int telefone;
 }
+
 pessoa
 {
     char nome[10];
@@ -19,6 +22,7 @@ pessoa
     void * ant;
     void * prox;
 }
+
 */
 
 void *pBuffer = NULL;
@@ -80,7 +84,7 @@ void * ResetPBuffer()
 
     if (pb == NULL)
     {
-        printf("Nao foi possivel alocar pbuffer!\n");
+        printf("Nao foi possivel alocar!\n");
         return 0;
     }
 
@@ -160,24 +164,21 @@ int Pop(void * head)
 {
     if (!Empty(head))
     {
-        void * p = *(void **)(head + SizeUntilProx());   
-        void * pAnt;
-        void * pProx;
-                
-        pAnt = *(void **)(p + SizeUntilAnt()); 
-        pProx = *(void **)(p + SizeUntilProx()); 
+        void * pop = *(void **)(head + SizeUntilProx());        //a pessoa a ser removida é a primeira da fila 
+        void * pProxPop = *(void **)(pop + SizeUntilProx());    //a pessoa que vem após a primeira da fila
+            
+        if( head != NULL )
+        *(void **)(head + SizeUntilProx()) = pProxPop;          //a cabeça aponta para a pessoa que vem após a primeira da fila
 
-        if( pAnt != NULL )
-        *(void **)(pAnt + SizeUntilProx()) = pProx;
-
-        if( pProx != NULL )
-        *(void **)(pProx + SizeUntilAnt()) = pAnt;
+        if( pProxPop != NULL )
+        *(void **)(pProxPop + SizeUntilAnt()) = head;           //o ponteiro anterior da pessoa que vem após a primeira da fila aponta para cabeça
                 
-        //guardar as informacoes do pop no pbuffer para caso precise acessar ele
-        strcpy((pBuffer + sizeof(int) + (10 * sizeof(char))),p);
-        *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2) = *(int*)(p + SizeUntilIdade());
-        *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)) = *(int*)(p + SizeUntilTelefone());
-        free(p);
+        //guardar as informacoes da pessoa removida no pBuffer para caso precise acessar as informaçoes dela
+        strcpy((pBuffer + sizeof(int) + (10 * sizeof(char))),pop);
+        *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2) = *(int*)(pop + SizeUntilIdade());
+        *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)) = *(int*)(pop + SizeUntilTelefone());
+        
+        free(pop);
         return 1;
     } else
     {
@@ -189,28 +190,29 @@ int Pop(void * head)
 void DeleteByName(void * head)
 {  
     printf("Digite o nome a apagar: ");
-    scanf("%s",(char *)(pBuffer + sizeof(int)) );
+    scanf("%s",(char *)(pBuffer + sizeof(int)) );                    //guarda nome no pBuffer para comparaçao
 
-    void * head_temp = NULL;
+    void * head_temp = NULL;                                         //agenda temporária para guardar as pessoas retiradas da agenda principal
     head_temp = Reset();
-    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));
+
+    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));     //ponteiros para dentro do pBuffer que guardam as informaçoes da pessoa que foi apagada no pop
     int * idade = (pBuffer + sizeof(int) + (10 * sizeof(char))*2);
     int * telefone = (pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)); 
                
     while(!Empty(head))
     {
-        Pop(head);
-        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )   // se nome pop == nome a apagar
+        Pop(head);                      
+        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )   //se nome pop == nome a apagar
         {
-            printf("Pessoa apagada :)\n");                            //nao insere na agenda temporaria
+            printf("Pessoa apagada :)\n");                            //nao insere na agenda temporária
         }
         else
         {
-            Push(head_temp,NewPerson(nome,idade,telefone));
+            Push(head_temp,NewPerson(nome,idade,telefone));           //se nome pop != nome a apagar insere na agenda temporária
         }
     }  
 
-    while(!Empty(head_temp))                                        //insere de volta as pessoas da agenda temporária para a agenda principal
+    while(!Empty(head_temp))                                          //insere de volta as pessoas da agenda temporária para a agenda principal
     {
         Pop(head_temp);
         Push(head,NewPerson(nome,idade,telefone));
@@ -221,11 +223,12 @@ void DeleteByName(void * head)
 void SearchByName(void * head)
 {
     printf("Digite o nome a buscar: ");
-    scanf("%s",(char *)(pBuffer + sizeof(int)) );
+    scanf("%s",(char *)(pBuffer + sizeof(int)) );                   //guarda nome no pBuffer para comparaçao
 
-    void * head_temp = NULL;
+    void * head_temp = NULL;                                        //agenda temporária para guardar as pessoas retiradas da agenda principal
     head_temp = Reset();
-    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));
+
+    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));    //ponteiros para dentro do pBuffer que guardam as informaçoes da pessoa que foi apagada no pop
     int * idade = (pBuffer + sizeof(int) + (10 * sizeof(char))*2);
     int * telefone = (pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)); 
                
@@ -233,13 +236,13 @@ void SearchByName(void * head)
     {
         Pop(head);
         Push(head_temp,NewPerson(nome,idade,telefone));
-        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )                         // se nome pop == nome a apagar
+        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )                         //se nome pop == nome a apagar
         {
             printf("Nome: %s | Idade: %d | Telefone: %d\n", nome, *idade, *telefone);       //imprime informacoes
         } 
     }  
 
-    while(!Empty(head_temp))                                                //insere de volta as pessoas da agenda temporária para a agenda principal
+    while(!Empty(head_temp))                                                                //insere de volta as pessoas da agenda temporária para a agenda principal
     {
         Pop(head_temp);
         Push(head,NewPerson(nome,idade,telefone));
@@ -249,9 +252,10 @@ void SearchByName(void * head)
 
 void List(void * head)
 {   
-    void * head_temp = NULL;
+    void * head_temp = NULL;                                        //agenda temporária para guardar as pessoas retiradas da agenda principal
     head_temp = Reset();
-    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));
+
+    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));    //ponteiros para dentro do pBuffer que guardam as informaçoes da pessoa que foi apagada no pop
     int * idade = (pBuffer + sizeof(int) + (10 * sizeof(char))*2);
     int * telefone = (pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int));            
 
@@ -262,7 +266,7 @@ void List(void * head)
         printf("Nome: %s | Idade: %d | Telefone: %d\n", nome, *idade, *telefone);
     }
 
-    while(!Empty(head_temp))
+    while(!Empty(head_temp))                                        //insere de volta as pessoas da agenda temporária para a agenda principal
     {
         Pop(head_temp);
         Push(head,NewPerson(nome,idade,telefone));
@@ -273,9 +277,9 @@ void List(void * head)
 
 void Clear(void * head)
 {
-    while(!Empty(head))
+    while(!Empty(head))     //remove todas pessoas da agenda         
     {
-        Pop(head);
+        Pop(head);      
     }
 }
 
@@ -298,7 +302,7 @@ int main()
 
     pBuffer = ResetPBuffer();
 
-    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));
+    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));        
     int * idade = (pBuffer + sizeof(int) + (10 * sizeof(char))*2);
     int * telefone = (pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int));
 
