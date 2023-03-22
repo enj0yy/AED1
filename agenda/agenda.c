@@ -178,7 +178,7 @@ int Pop(void * head)
         *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2) = *(int*)(pop + SizeUntilIdade());
         *(int*)(pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)) = *(int*)(pop + SizeUntilTelefone());
         
-        free(pop);
+        free(pop);                                              //finalmente free na pessoa
         return 1;
     } else
     {
@@ -190,29 +190,29 @@ int Pop(void * head)
 void DeleteByName(void * head)
 {  
     printf("Digite o nome a apagar: ");
-    scanf("%s",(char *)(pBuffer + sizeof(int)) );                    //guarda nome no pBuffer para comparaçao
+    scanf("%s",(char *)(pBuffer + sizeof(int)) );                       //guarda nome no pBuffer para comparaçao
 
-    void * head_temp = NULL;                                         //agenda temporária para guardar as pessoas retiradas da agenda principal
+    void * head_temp = NULL;                                            //agenda temporária para guardar as pessoas retiradas da agenda principal
     head_temp = Reset();
 
-    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));     //ponteiros para dentro do pBuffer que guardam as informaçoes da pessoa que foi apagada no pop
+    char * nome = (pBuffer + sizeof(int) + (10 * sizeof(char)));        //ponteiros para dentro do pBuffer que guardam as informaçoes da pessoa que foi apagada no pop
     int * idade = (pBuffer + sizeof(int) + (10 * sizeof(char))*2);
     int * telefone = (pBuffer + sizeof(int) + (10 * sizeof(char))*2 + sizeof(int)); 
                
     while(!Empty(head))
     {
         Pop(head);                      
-        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )   //se nome pop == nome a apagar
+        if ( strcmp( nome, (char *)(pBuffer + sizeof(int)) ) == 0 )     //se nome pop == nome a apagar
         {
-            printf("Pessoa apagada :)\n");                            //nao insere na agenda temporária
+            printf("Pessoa apagada!\n");                                //nao insere na agenda temporária
         }
         else
         {
-            Push(head_temp,NewPerson(nome,idade,telefone));           //se nome pop != nome a apagar insere na agenda temporária
+            Push(head_temp,NewPerson(nome,idade,telefone));             //se nome pop != nome a apagar insere na agenda temporária
         }
     }  
 
-    while(!Empty(head_temp))                                          //insere de volta as pessoas da agenda temporária para a agenda principal
+    while(!Empty(head_temp))                                            //insere de volta as pessoas da agenda temporária para a agenda principal
     {
         Pop(head_temp);
         Push(head,NewPerson(nome,idade,telefone));
@@ -277,7 +277,7 @@ void List(void * head)
 
 void Clear(void * head)
 {
-    while(!Empty(head))     //remove todas pessoas da agenda         
+    while(!Empty(head))             
     {
         Pop(head);      
     }
