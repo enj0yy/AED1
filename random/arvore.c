@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct _no
 {
@@ -9,15 +10,28 @@ typedef struct _no
     struct _no * pDir;
 } No;
 
-int Altura(No * p, No * raiz)
+int Altura(No * p)
 {
-    if (raiz == p)
-        return 1;
+    int esq,dir;
 
-    if(p->chave < raiz->chave)
-        return 1 + Altura(p,raiz->pEsq);
-    else 
-        return 1 + Altura(p,raiz->pDir);
+    if (p == NULL)
+        return 0;
+
+    esq = Altura(p->pEsq);
+    dir = Altura(p->pDir);
+
+    if (esq > dir)
+        return 1 + esq;
+    else
+       return 1 + dir; 
+}
+
+int FB(No * p)
+{
+    if (p == NULL)
+    return 0;
+
+    return Altura(p->pEsq) - Altura(p->pDir);
 }
 
 void Inserir(int chave, No ** p)
@@ -131,52 +145,50 @@ No * Retirar(int chave, No ** p)
                 return *p;
             }            
         }
-
-        return NULL;
+        return *p;
     } 
 }
 
-void Listar(No * p, No * raiz, int isleft)
+void Listar(No * p, int level, int isleft)
 {
     if (p == NULL)
         return;
 
-    for (int i = 0; i < Altura(p,raiz) - 1; i++)
-        printf(i == Altura(p,raiz) - 2 ? "|_" : "| ");
+    for (int i = 0; i < level; i++)
+        printf(i == level-1 ? "|_" : "  ");
 
     switch (isleft)
     {
     case -1:
-        printf("r(%d)\n", p->chave);
+        printf("r(%d) FB(%d)\n", p->chave, FB(p));
         break;
     case 1:
-        printf("e(%d)\n", p->chave);
+        printf("e(%d) FB(%d)\n", p->chave, FB(p));
         break;
     case 0:
-        printf("d(%d)\n", p->chave);
+        printf("d(%d) FB(%d)\n", p->chave, FB(p));
         break;
     }
-
-    Listar(p->pEsq, raiz, 1);
-    Listar(p->pDir, raiz, 0);
+    
+    Listar(p->pEsq, level+1, 1);
+    Listar(p->pDir, level+1, 0);
 }
 
 int main()
 {
+    int n;
     No * raiz = NULL;
-    Inserir(10, &raiz);
-    Inserir(8, &raiz);
-    Inserir(11, &raiz);
-    Inserir(7, &raiz);
-    Inserir(9, &raiz);
+    srand(time(NULL)); 
 
+    for(int i=0; i<=5; i++)
+    {
+        n = rand()%100;
+        Inserir(n,&raiz); 
+    }
+    
     printf("Pre ordem:\n");
-    Listar(raiz,raiz,-1);
+    Listar(raiz,0,-1);
 
-    Retirar(8,&raiz);
-
-    printf("\nPre ordem:\n");
-    Listar(raiz,raiz,-1);
 
     return 0;
 }
