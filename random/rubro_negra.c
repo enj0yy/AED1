@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 typedef struct _no
 {
     int chave;
-    int black;
+    char cor;
     struct _no * pPai;
     struct _no * pEsq;
     struct _no * pDir;
@@ -16,6 +17,8 @@ void InserirCaso2(No * p);
 void InserirCaso3(No * p);
 void InserirCaso4(No * p);
 void InserirCaso5(No * p);
+
+No * raiz = NULL;
 
 int Altura(No * p)
 {
@@ -41,31 +44,50 @@ int FB(No * p)
     return Altura(p->pEsq) - Altura(p->pDir);
 }
 
-No * RD(No * p)
+void RD(No * p)
 {
-    No * a;
+    No * aux;
+    
+    if(p->pPai != NULL)                 // pai do nodo ira apontar pro filho dele
+    {
+        if (p->pPai->pEsq == p)         // nodo filho a esquerda
+            p->pPai->pEsq = p->pEsq;
+        else                            // nodo filho a direita
+            p->pPai->pDir = p->pEsq;
+    }
+    else
+    {
+        raiz = p->pEsq;                 // caso o nodo a rodar for a raiz, é preciso mudar o ponteiro raiz
+    }
+    p->pEsq->pPai = p->pPai;            // arrumar os pais (nodo e filho)
+    p->pPai = p->pEsq;                  // arrumar os pais (nodo e filho)
 
-    a = p->pEsq->pDir;
-
+    aux = p->pEsq->pDir;                // rotaçao
     p->pEsq->pDir = p;
-    p->pEsq = a;
-
-    return p->pEsq;
+    p->pEsq = aux;
 }
 
-No * RE(No * p)
+void RE(No * p)
 {
-    No * a;
+    No * aux;
 
-    if (p->pDir == NULL)
-        a = NULL;
+    if(p->pPai != NULL)                 // pai do nodo ira apontar pro filho dele
+    {
+        if (p->pPai->pEsq == p)         // nodo filho a esquerda
+            p->pPai->pEsq = p->pDir;
+        else                            // nodo filho a direita
+            p->pPai->pDir = p->pDir;
+    }
     else
-        a = p->pDir->pEsq;
+    {
+        raiz = p->pDir;                 // caso o nodo a rodar for a raiz, é preciso mudar o ponteiro raiz
+    }
+    p->pDir->pPai = p->pPai;            // arrumar os pais (nodo e filho)
+    p->pPai = p->pDir;                  // arrumar os pais (nodo e filho)
 
+    aux = p->pDir->pEsq;                // rotaçao
     p->pDir->pEsq = p;
-    p->pDir = a;
-    
-    return p->pDir;
+    p->pDir = aux;    
 }
 
 No * Avo(No * p)
@@ -89,11 +111,12 @@ No * Tio(No * p)
         return avo->pEsq;
 }
 
-void InserirCaso1(No * p)   // a raiz é preta
+// A raiz sempre é preta
+void InserirCaso1(No * p)   
 {
     if (p->pPai == NULL)    
     {
-        p->black = 1;
+        p->cor = 'B';
     }
     else
     {
@@ -101,15 +124,16 @@ void InserirCaso1(No * p)   // a raiz é preta
     }
 }
 
-void InserirCaso2(No * p)   // ambos os filhos de nó vermelho sao pretos
+// Ambos os filhos de nó preto sao vermelhos
+void InserirCaso2(No * p)   
 {
-    if (p->pPai->black == 1)
+    if (p->pPai->cor == 'B')
     {
         return;
     }
     else
     {
-        InserirCaso3(p);    // começa as correçoes de cores/rotacoes
+        InserirCaso3(p);    
     }
 }
 
@@ -119,11 +143,11 @@ void InserirCaso3(No * p)
     No * tio = Tio(p);
     No * avo = Avo(p);
 
-    if (tio != NULL && tio->black == 0) 
+    if (tio != NULL && tio->cor == 'R') 
     {
-        p->pPai->black = 1;
-        tio->black = 1;
-        avo->black = 0;
+        p->pPai->cor = 'B';
+        tio->cor = 'B';
+        avo->cor = 'R';
         InserirCaso1(avo);
     }
     else
@@ -132,19 +156,19 @@ void InserirCaso3(No * p)
     }
 }
 
-// Tio do elemento é PRETO e o elemento é um filho da ESQUERDA = rota o pai pra direita
+// Tio do elemento é PRETO = rotar
 void InserirCaso4(No * p) 
 {
     No * avo = Avo(p);
 
-    if ( (p->pPai->pEsq == p) && (p->pPai == avo->pDir) )
+    if ( (p == p->pPai->pEsq) && (p->pPai == avo->pDir) )       //filho a esquerda
     {
-        avo->pDir = RD(p->pPai);
+        RD(p->pPai);
         p = p->pDir;
     }
-    else if ( (p->pPai->pDir == p) && (p->pPai == avo->pEsq) )
+    else if ( (p == p->pPai->pDir) && (p->pPai == avo->pEsq) )  //filho a direita
     {
-        avo->pEsq = RE(p->pPai);
+        RE(p->pPai);
         p = p->pEsq;
     }
     InserirCaso5(p);
@@ -154,23 +178,17 @@ void InserirCaso5(No * p)
 {
     No * avo = Avo(p);
 
-    if (p == p->pPai->pDir && p->pPai == avo->pDir)
-    {
-        if (avo == avo->pPai->pDir)
-            avo->pPai->pDir = RD(avo);
-        else
-            avo->pPai->pEsq = RD(avo);
+    if ( (p == p->pPai->pEsq) && (p->pPai == avo->pEsq) )
+    {     
+        RD(avo);
     }
     else
     {
-        if (avo == avo->pPai->pDir)
-            avo->pPai->pDir = RE(avo);
-        else
-            avo->pPai->pEsq = RE(avo);
+        RE(avo);
     }
 
-    p->pPai->black = 1;
-    avo->black = 0;
+    p->pPai->cor = 'B';
+    avo->cor = 'R';
 }
 
 int Inserir(No ** p, No * pai, int chave)
@@ -179,28 +197,28 @@ int Inserir(No ** p, No * pai, int chave)
     {
         (*p) = (No*)malloc(sizeof(No));
         (*p)->chave = chave;
-        (*p)->black = 0;
+        (*p)->cor = 'R';
         (*p)->pPai = pai;
         (*p)->pEsq = NULL;
         (*p)->pDir = NULL;
+        InserirCaso1(*p);
     }
     else
     {
         if ( chave < (*p)->chave )
         {
-            Inserir(&(*p)->pEsq,*p,chave);
+            return Inserir(&(*p)->pEsq,*p,chave);
         }
         else if ( chave > (*p)->chave )
         {
-            Inserir(&(*p)->pDir,*p,chave);
+            return Inserir(&(*p)->pDir,*p,chave);
         }
         else if ( chave == (*p)->chave )
         {
-            printf("Chave %d ja existente", chave);
+            printf("Chave %d já existente.\n", chave);
             return 0;
         }
     }
-    InserirCaso1(*p);
     return 1;
 }
 
@@ -210,19 +228,22 @@ void Listar(No * p)
         return;
 
     Listar(p->pEsq);
-    printf("| Chave: %d Preto: %d Pai-Chave: %d FB: %d|\n",p->chave,p->black, p->pPai ? p->pPai->chave : 0,FB(p));
+    printf("| Chave: %-4d Cor: %-4c Pai: %-4d FB: %-3d|\n",
+    p->chave, p->cor, p->pPai ? p->pPai->chave : 0 ,FB(p));
     Listar(p->pDir);
 }
 
 int main()
 {
-    No * raiz = NULL;
-    Inserir(&raiz,NULL,10);
-    Inserir(&raiz,NULL,5);
-    Inserir(&raiz,NULL,15);
-    Inserir(&raiz,NULL,3);
-    Inserir(&raiz,NULL,2);
-    Inserir(&raiz,NULL,1);
+    int n;
+    srand(time(NULL)); 
+    
+    for (int i=1;i<=20;i++)
+    {
+        n = rand()%99;
+        Inserir(&raiz,NULL,n);
+    }
+
     Listar(raiz);
     return 0;
 }
