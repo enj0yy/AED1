@@ -215,7 +215,7 @@ int Inserir(No ** p, No * pai, int chave)
         }
         else if ( chave == (*p)->chave )
         {
-            printf("Chave %d já existente.\n", chave);
+            printf("Chave %d ja existente.\n", chave);
             return 0;
         }
     }
@@ -228,9 +228,21 @@ void Listar(No * p)
         return;
 
     Listar(p->pEsq);
-    printf("| Chave: %-4d Cor: %-4c Pai: %-4d FB: %-3d|\n",
-    p->chave, p->cor, p->pPai ? p->pPai->chave : 0 ,FB(p));
+    printf("| %s Chave: %-4d Cor: %-4c Pai: %-4d FB: %-3d|\n",
+    p->pPai ? " " : "R", p->chave, p->cor, p->pPai ? p->pPai->chave : 0 ,FB(p));
     Listar(p->pDir);
+}
+
+No * LimparArvore(No * p)
+{
+    if ( p == NULL )
+        return NULL;
+
+    p->pEsq = LimparArvore(p->pEsq);
+    p->pEsq = LimparArvore(p->pDir);
+    free(p);
+
+    return NULL;
 }
 
 int main()
@@ -238,12 +250,14 @@ int main()
     int n;
     srand(time(NULL)); 
     
-    for (int i=1;i<=20;i++)
+    for (int i=1;i<=21;i++)
     {
         n = rand()%99;
         Inserir(&raiz,NULL,n);
     }
 
     Listar(raiz);
+    raiz = LimparArvore(raiz);
+
     return 0;
 }

@@ -143,56 +143,56 @@ int Inserir(int chave, No ** p)
     return 1;
 }
 
-No * Remover(int chave, No ** p)
+int Remover(int chave, No ** p)
 {
     No * aux;
 
     if (*p == NULL)
     {
         printf("Chave %d nao encontrada\n", chave);
-        aux = NULL;
+        return 0;
     }
     else
     { 
         if (chave < (*p)->chave)
         {
-            (*p)->pEsq = Remover(chave, &(*p)->pEsq);
-            aux = *p;
+            Remover(chave, &(*p)->pEsq);
             if ( (FB(*p) < -1) || (FB(*p) > 1) )
-                aux = Balancear(*p);
+                *p = Balancear(*p);
         }
         else if (chave > (*p)->chave)
         {
-            (*p)->pDir = Remover(chave, &(*p)->pDir);   
-            aux = *p;
+            Remover(chave, &(*p)->pDir);   
             if ( (FB(*p) < -1) || (FB(*p) > 1) )
-                aux = Balancear(*p);
+                *p = Balancear(*p);
         }
         else if (chave == (*p)->chave)
         {
             if ((*p)->pDir == NULL && (*p)->pEsq == NULL) {                 // folha
+                *p = NULL;
                 free(*p);
-                aux =  NULL;
             }
             else if((*p)->pDir == NULL)                                     // 1 filho na esquerda
             {
-                aux = (*p)->pEsq;
-                free(*p);
+                aux = *p;
+                *p = (*p)->pEsq;
+                free(aux);
             }
             else if((*p)->pEsq == NULL)                                     // 1 filho na direita
             {
-                aux = (*p)->pDir;
-                free(*p);
+                aux = *p;
+                *p = (*p)->pDir;
+                free(aux);
             }
             else if ( ((*p)->pEsq != NULL) &&  ((*p)->pDir != NULL) )       // 2 filhos
             {
                 Trocar(*p, (*p)->pEsq);
-                (*p)->pEsq = Remover(chave, &(*p)->pEsq);
+                Remover(chave, &(*p)->pEsq);
                 aux = *p;
-            }
-        }    
+            }  
+        }   
+        return 1; 
     }
-    return aux;
 }
 
 void Listar(No * p, int level, int isleft)
@@ -228,48 +228,46 @@ int IsAVL(No * p)
         return 1;
 
     fb = FB(p);
-    if (fb >= -1 && fb <= 1)  
+    if (fb >= -1 && fb <= 1)                        // O nodo é balanceado
     {
-        if (IsAVL(p->pEsq))
-            return IsAVL(p->pDir);
+        if (IsAVL(p->pEsq) && IsAVL(p->pDir))       // Checa se a subarvore da esquerda e direita é balanceada tmb
+            return 1;      
         else
-            return 0;
+            return 0;           
     }
     else
     {
-        return 0;
+        return 0;                                   // O nodo nao é balanceado
     }
+}
+
+No * LimparArvore(No * p)
+{
+    if ( p == NULL )
+        return NULL;
+
+    p->pEsq = LimparArvore(p->pEsq);
+    p->pEsq = LimparArvore(p->pDir);
+    free(p);
+
+    return NULL;
 }
 
 int main()
 {
     int n;
-    n = rand()%100;
     No * raiz = NULL;
     srand(time(NULL)); 
 
-    do
+    for (int i=0;i<23;i++)
     {
-        printf("Digite o valor a ser inserido (0 = sair): ");
-        scanf("%d",&n);
-        if ( n!=0 )
-            Inserir(n,&raiz); 
-    } while (n != 0);
-    
+        n = rand()%100;
+        Inserir(n,&raiz); 
+    }
+
     Listar(raiz,0,-1);
-
-    do
-    {
-        printf("Digite o valor a ser removido (0 = sair): ");
-        scanf("%d",&n);
-        if ( n!=0 )
-        { 
-            raiz = Remover(n,&raiz); 
-            Listar(raiz,0,-1);
-        }
-    } while (n != 0);
-
-    printf("E avl? %d",IsAVL(raiz));
-
+    printf("E avl? %s", IsAVL(raiz) ? "sim" : "nao");
+    raiz = LimparArvore(raiz);
+    
     return 0;
 }
