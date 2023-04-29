@@ -141,6 +141,7 @@ int main()
     // caso 4
     int nums4[] = {50,-75};
     tamanho = 2;
+    k = 2;
     soma = maxSubsequence(nums4, tamanho, k, &returnSize);
     for (int j = 0; j < returnSize; j++)
             printf("%d ", soma[j]);
