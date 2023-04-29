@@ -7,9 +7,9 @@ typedef struct _elemento
     int posicaoInicial;
 } Elemento;
 
-void QuickSortElement(Elemento vetor[], int esquerda, int direita)
+void QuickSortElement( Elemento vetor[], int esquerda, int direita )
 {
-    if (esquerda >= direita)
+    if ( esquerda >= direita )
         return;
 
     int pivo = vetor[(esquerda + direita) / 2].num;
@@ -17,12 +17,12 @@ void QuickSortElement(Elemento vetor[], int esquerda, int direita)
     int d = direita;
     Elemento temp;
 
-    while (e <= d)
+    while ( e <= d )
     {
-        while (vetor[e].num < pivo)
+        while ( vetor[e].num < pivo )
             e++;
 
-        while (vetor[d].num > pivo)
+        while ( vetor[d].num > pivo )
             d--;
 
         if (e <= d)
@@ -35,13 +35,13 @@ void QuickSortElement(Elemento vetor[], int esquerda, int direita)
         }
     }
 
-    QuickSortElement(vetor, esquerda, d);
-    QuickSortElement(vetor, e, direita);
+    QuickSortElement( vetor, esquerda, d );
+    QuickSortElement( vetor, e, direita );
 }
 
-void QuickSortInt(int vetor[], int esquerda, int direita)
+void QuickSortInt( int vetor[], int esquerda, int direita )
 {
-    if (esquerda >= direita)
+    if ( esquerda >= direita )
         return;
 
     int pivo = vetor[(esquerda + direita) / 2];
@@ -49,15 +49,15 @@ void QuickSortInt(int vetor[], int esquerda, int direita)
     int d = direita;
     int temp;
 
-    while (e <= d)
+    while ( e <= d )
     {
-        while (vetor[e] < pivo)
+        while ( vetor[e] < pivo )
             e++;
 
-        while (vetor[d] > pivo)
+        while ( vetor[d] > pivo )
             d--;
 
-        if (e <= d)
+        if ( e <= d )
         {
             temp = vetor[e];
             vetor[e] = vetor[d];
@@ -67,31 +67,31 @@ void QuickSortInt(int vetor[], int esquerda, int direita)
         }
     }
 
-    QuickSortInt(vetor, esquerda, d);
-    QuickSortInt(vetor, e, direita);
+    QuickSortInt( vetor, esquerda, d );
+    QuickSortInt( vetor, e, direita );
 }
 
-int * maxSubsequence(int * nums, int numsSize, int k, int * returnSize)
+int * maxSubsequence( int * nums, int numsSize, int k, int * returnSize )
 { 
     Elemento numsTemp[numsSize];
     int indices[k];
 
-    for (int i = 0; i < numsSize; i++)
+    for ( int i = 0; i < numsSize; i++ )
     {
         numsTemp[i].num = nums[i];
         numsTemp[i].posicaoInicial = i;
     }
 
-    QuickSortElement(numsTemp, 0, numsSize - 1); 
+    QuickSortElement( numsTemp, 0, numsSize - 1 ); 
 
-    for (int i = (numsSize - k); i < numsSize; i++)
+    for ( int i = (numsSize - k); i < numsSize; i++ )
         indices[(k + i) - numsSize] = numsTemp[i].posicaoInicial;
 
-    QuickSortInt(indices,0,k-1);
+    QuickSortInt( indices,0,k-1 );
 
     int * soma;
-    soma = malloc(sizeof(int) * k);
-    for (int i = 0; i < k; i++)
+    soma = malloc( sizeof(int) * k );
+    for ( int i = 0; i < k; i++ )
         soma[i] = nums[indices[i]];
 
     *returnSize = k;
